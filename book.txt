@@ -10,3 +10,13 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to 
 track)
 
+suadhm@Sumos-MacBook-Pro GitFall2024-Suad % git status 
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   answers.txt
+
+
