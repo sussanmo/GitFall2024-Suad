@@ -1,0 +1,26 @@
+Strike:1
+Genetic Algorithm:1
+Crush:3
+Biased Cognition:1
+All For One:2
+Strike:1
+Genetic Algorithm:1
+Strike:1
+Bash:2
+Neutralize:0
+Deadly Poison:1
+Zap:0
+Dualcast:1
+Eruption:2
+Vigilance:2
+Crush Joints:1
+Biased Cognition:1
+Genetic Algorithm:1
+All For One:2
+Searing Blow:2
+Blade Dance:1
+Fission:0
+Lesson Learned:1
+:1
+
+

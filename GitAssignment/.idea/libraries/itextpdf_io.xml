@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="itextpdf.io" type="repository">
+    <properties maven-id="com.itextpdf:io:7.2.1" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/io-7.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-7.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.31.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
