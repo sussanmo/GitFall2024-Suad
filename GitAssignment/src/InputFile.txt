@@ -22,5 +22,7 @@ Blade Dance:1
 Fission:0
 Lesson Learned:1
 :1
+fakeName:1
+Expunger:20
 
 

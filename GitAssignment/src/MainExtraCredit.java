@@ -1,9 +1,11 @@
+import org.jfree.chart.JFreeChart;
 import org.jfree.ui.RefineryUtilities;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import org.jfree.chart.JFreeChart;
 
 // Valid costs for a card in the deck are positive integers between 0 and 6 (inclusive)
 // Each card has an associated energy cost, determining how many energy points are required to play that card
@@ -15,7 +17,7 @@ import org.jfree.chart.JFreeChart;
 // Creates a report that tallies the total energy cost and a energy cost histogram for the deck
 // Output the report in a pdf file
 
-public class Main {
+public class MainExtraCredit {
 
     private static String deckId;
     private static double totalCost;
@@ -67,7 +69,7 @@ public class Main {
                     String cardCost = card[1];
 
                     // Check validity of card
-                    cardValidity = validCardChecker(cardName, cardCost);
+                    cardValidity = validCardChecker(cardName, cardCost); // ValidCardName checked here EC1
 
                     if (cardValidity && cardIndex < 1000) {
                         cardList.add(card);  // Add valid card
@@ -171,7 +173,7 @@ public class Main {
                 }
 
                 } else {
-                    // Log a message if the line doesn't contain the correct format
+                    // In all other cases, card must be invalid based on the line input fomat
                     System.out.println("Invalid card input. Cards should be in this format ");
                 }
 
@@ -204,14 +206,27 @@ public class Main {
      */
     private static boolean validCardChecker(String cardName, String cardCost){
         boolean valid = true;
-        // Check invalid cost value, a card with empty name, a card with name that is only spaces or tabs
+        // Check invalid cost value, a card with empty name, a card with name that is only spaces or tabs, checks cardName as valid card in actual game
         if (cardName == null || cardName.trim().isEmpty()) {
             System.err.println("Invalid card name: '" + cardName + "'. It cannot be empty or only spaces.");
             valid = false;
         }
-        // Ensure card name is strictly alphabetical
+        // Ensure card name is valid
         if (cardName != null && !cardName.matches("[a-zA-Z ]+")) {
             System.err.println("Invalid card name format: '" + cardName + "'. Card names should only contain alphabetic characters and spaces.");
+            valid = false;
+        }
+
+        // Implementation of EC1: Valid Card Name
+        if(!validCardName(cardName)){
+            System.err.println("CardName: '" + cardName + "' is not a valid card in the Splay the Spire Game");
+            valid = false;
+        }
+
+        // Implementation of EC2: Custom Feature: Valid Card Name + Cost Combo
+        if(!validCardCombo(cardName, cardCost)){
+            System.err.println("CardName: '" + cardName + "' and CardEnergy : '" + cardCost + "' are not valid combinations in the Splay the Spire Game");
+            //System.err.println("Valid Energy for your card : '" + cardName + " are " ); // Lists the correct card energy for the current card
             valid = false;
         }
         try {
@@ -227,8 +242,160 @@ public class Main {
         return valid;
     }
 
+    /**
+     * Checks the validity of the card based on the name provided by comparing it to a list of card names
+     * Extra Credit 1: (EC1) Card Name Validation (+5)
+     * Text file derived from excel sheet found here: https://www.reddit.com/r/slaythespire/comments/yjll3t/pdf_printable_card_guide/
+     * A valid card should have:
+     * - A non-empty name.
+     * - matched name corresponding to a name in the splay the spire card file
+     *
+     *
+     * @param cardName The name of the card.
+     * @return `true` if the cardName is valid, `false` otherwise.
+     */
+    private static boolean validCardName(String cardName) {
+        boolean valid = false;
+        BufferedReader reader = null;
+
+        String cardFile = "AllCard.txt";
+        try {
+            reader = new BufferedReader(new FileReader(cardFile));
+            String card = reader.readLine();
+
+            // Loop through each line in the file
+            while (card != null) {
+
+                card.trim(); // Ensure additional spaces don't follow
+
+                if (card.equalsIgnoreCase(cardName)) {  // Ensure case doesn't affect comparison
+                    valid = true;  // Found a match
+                    break;
+                }
+
+                card = reader.readLine();
+            }
+
+        }
+        // Handle I/O exceptions during file reading
+        catch (IOException e) {
+        System.err.println(e);
+    }
+
+        // cardName is invalid by default if match was never found
+        return valid;
+    }
 
 
+    /**
+     * Checks the validity of the card based on the name provided by comparing it to a list of card names and the possible energy costs
+     * Extra Credit 3: (EC3) Custom Feature (Up to 10 points):
+     * Text file derived from excel sheet found here: https://www.reddit.com/r/slaythespire/comments/yjll3t/pdf_printable_card_guide/
+     *
+     * A valid card should have:
+     * - A non-empty name.
+     * - matched name corresponding to a name in the splay the spire card file
+     * - match the possible energy cost of the corresponding card
+     *
+     *
+     * @param cardName The name of the card
+     * @param cardEnergy The energy cost of the card
+     * @return `true` if the cardName and cardEnergy combo is valid, `false` otherwise.
+     */
+    private static boolean validCardCombo(String cardName, String cardEnergy){
+        boolean valid = false;
+        BufferedReader reader = null;
+        String csvFile = "SlaytheSpireReference.csv";
+        String line;
+        String csvSplitBy = ",";
+
+
+        try {
+            reader = new BufferedReader(new FileReader(csvFile));
+            line = reader.readLine();
+            while (line != null) {
+                // Split by comma
+                String[] cardInfo = line.split(csvSplitBy);
+                // card[0] is card name, card[1] is energy cost
+                //System.out.println("Card Name: " + card[0] + " , Energy Cost: " + card[1] + " , Other Energy Cost: " + card[2] );
+
+                if (cardInfo.length > 1) {  // Ensure there's at least a name and energy column
+                    String csvCardName = cardInfo[0].trim();  // Get card name
+                    String csvCardEnergy = cardInfo[1].trim();  // Get card energy (Cost)
+
+                    // Check if the card name matches and the energy is valid
+                    if (csvCardName.equalsIgnoreCase(cardName)) {
+                        if (csvCardEnergy.equals(cardEnergy)) {
+                            valid = true;  // Both name and energy match
+                            break;  // No need to continue, exit the loop
+                        }
+                    }
+
+                    // Check card's alternative energy card if it exists
+                    if (cardInfo.length > 2 && cardInfo[2] != null && !cardInfo[2].trim().isEmpty()) {
+                        String csvCardAltEnergy = cardInfo[2].trim();  // Alternative energy cost
+
+                        // Check if the alternative energy cost matches
+                        if (csvCardAltEnergy.equals(cardEnergy)) {
+                            valid = true;  // Match found with alternative energy
+                            break;
+
+                        }
+                    }
+
+                    // Handle the case where cardName matches but has an invalid cardEnergy
+                    // Call for method that will notify user of correct energy combination
+                    if (csvCardName.equalsIgnoreCase(cardName)) {
+                        // and CardEnergy doesn't equal it
+                        if (!csvCardEnergy.equals(cardEnergy)) {
+                            invalidCardEnergy(cardName, csvCardEnergy, cardInfo);
+                            break;
+
+
+                        }
+                    }
+
+
+                }
+
+                line = reader.readLine();
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return valid;
+    }
+
+
+
+    /**
+     * Prints out the correct energy costs for a given cardName if there is an invalid card Energy corresponding to the cardName in the splice game
+     * Extra Credit 3: (EC3) Custom Feature (Up to 10 points):
+     * Text file derived from excel sheet found here: https://www.reddit.com/r/slaythespire/comments/yjll3t/pdf_printable_card_guide/
+     *
+     *
+     * @param cardName The name of the card
+     * @param primaryEnergy The energy cost of the card
+     * @param cardInfo The current row containing the cardName and possible energy costs
+     * @return `true` if the cardName and cardEnergy combo is valid, `false` otherwise.
+     */
+    private static void invalidCardEnergy(String cardName, String primaryEnergy, String[] cardInfo) {
+        // Construct the message with valid energy options
+        StringBuilder validEnergies = new StringBuilder();
+        validEnergies.append(primaryEnergy);  // Append primary energy
+
+        // If there's an alternative energy, append that as well
+        if (cardInfo.length > 2 && cardInfo[2] != null && !cardInfo[2].trim().isEmpty()) {
+            validEnergies.append(", ").append(cardInfo[2].trim());  // Append alternative energy cost
+        }
+
+        // Print out the message indicating valid energies
+        System.err.println("CardName: '" + cardName + "' and CardEnergy: '" + cardInfo[1] + "' are not valid combinations in the Splay the Spire Game.");
+
+        System.err.println("Valid Energy for your card: '" + cardName + "' are: " + validEnergies.toString());
+    }
 
     public static void main(String[] args) {
         String inputFile = "/Users/suadhm/IdeaProjects/GitAssignment/src/InputFile.txt";
@@ -265,7 +432,7 @@ public class Main {
             uniqueFileName.append(".pdf");
             filePath += uniqueFileName;
 
-            System.out.println(filePath);
+            //System.out.println(filePath);
 
             // Generate PDF with the deck details and chart
             PDFGenerator.generatePDFVariables(filePath, totalCost, deckId, chartImagePath);

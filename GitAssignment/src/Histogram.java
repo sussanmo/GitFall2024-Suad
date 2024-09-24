@@ -101,9 +101,9 @@ public class Histogram extends ApplicationFrame {
      */
     protected JFreeChart createChart(CategoryDataset dataset) {
         JFreeChart chart = ChartFactory.createBarChart(
-                "Histogram Demo",      // Chart title
+                "Histogram ",      // Chart title
                 "CardName",            // X-axis Label
-                "Cost",                // Y-axis Label
+                "Energy",                // Y-axis Label
                 dataset,               // Dataset
                 PlotOrientation.VERTICAL, // Plot Orientation
                 true,                  // Include legend
